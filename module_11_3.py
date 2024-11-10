@@ -1,36 +1,22 @@
-from pprint import pprint
-import requests
-
-
-class Introspectoin:
+def introspection_info(obj):
     _dict = {}
-
-    def __init__(self, obj):
-        global _dict
-        self.obj = obj
-
-    def introspection_info(self):
-        self._type()
-        self.att()
-        self.met()
-        self.mod()
-        return self._dict
-
-    def _type(self):
-        self._dict['type'] = type(self.obj)
-
-    def att(self):
-        self._dict['attributes'] = list(set(dir(self.obj)) - set(dir(type(self.obj))))
-
-    def met(self):
-        self._dict['methods'] = dir(self.obj)
-
-    def mod(self):
-        try:
-            self._dict['module'] = self.obj.__module__
-        except AttributeError:
-            self._dict['module'] = __name__  # или __file__? не совсем понял, о каком модуле речь
+    _dict['type'] = type(obj).__name__
+    _list_atr = []
+    _list_met = []
+    for i in dir(obj):
+        if callable(getattr(obj, i)):
+            _list_met.append(i)
+        if not callable(getattr(obj, i)):
+            _list_atr.append(i)
+    _dict['attributes'] = _list_atr
+    _dict['methods'] = _list_met
+    try:
+        _dict['module'] = obj.__module__
+    except AttributeError:
+        _dict['module'] = __name__
+    return _dict
 
 
-intro = Introspectoin(42)
-pprint(intro.introspection_info())
+number_info = introspection_info(42)
+print(number_info)
+
